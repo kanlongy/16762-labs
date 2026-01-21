@@ -35,24 +35,11 @@ class StretchApiDemo(hm.HelloNode):
         self.move_to_pose({'joint_wrist_roll': 1.0}, blocking=True, duration=2.0)
 
         #4 Open and close gripper
-        OPEN = 0.6
+        OPEN = 0.1  
         CLOSE = 0.0
-        self.move_to_pose(
-            {
-                'joint_gripper_finger_left': OPEN,
-                'joint_gripper_finger_right': OPEN,
-            },
-            blocking=True,
-            duration=1.5
-        )
-        self.move_to_pose(
-            {
-                'joint_gripper_finger_left': CLOSE,
-                'joint_gripper_finger_right': CLOSE,
-            },
-            blocking=True,
-            duration=1.5
-        )
+
+        self.move_to_pose({'gripper_aperture': OPEN}, blocking=True, duration=1.5)
+        self.move_to_pose({'gripper_aperture': CLOSE}, blocking=True, duration=1.5)
 
         #5 Rotate head motors
         self.move_to_pose(
