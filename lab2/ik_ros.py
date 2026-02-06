@@ -200,12 +200,12 @@ class StretchIKDemo(hm.HelloNode):
         # # Move to grasp goal
         # self.move_to_grasp_goal(target_point, target_orientation)
         # print(self.get_current_grasp_pose())
-        print("===z_walk===")
+        print("===4_steps_goal===")
         z_walk_poses = [
-        ([0.5, -0.3, 0.5], ikpy.utils.geometry.rpy_matrix(0, 0, 0)),
-        ([0.5, 0.3, 0.5], ikpy.utils.geometry.rpy_matrix(0, 0, 0)),
-        ([0.3, 0.3, 0.5], ikpy.utils.geometry.rpy_matrix(0, 0, 0)),
-        ([0.3, -0.3, 0.5], ikpy.utils.geometry.rpy_matrix(0, 0, 0)),]
+        ([0.4, -0.4, 0.4], ikpy.utils.geometry.rpy_matrix(0, 0, 0)),
+        ([0.4, -0.4, 0.2], ikpy.utils.geometry.rpy_matrix(0, 0, 0)),
+        ([0.4, -0.4, 0.2], ikpy.utils.geometry.rpy_matrix(0, 0, 0)),
+        ([0.4, -0.4, 0.4], ikpy.utils.geometry.rpy_matrix(0, 0, 0)),]
         for i, (point, orientation) in enumerate(z_walk_poses):
             self.move_to_grasp_goal(point, orientation)
         
