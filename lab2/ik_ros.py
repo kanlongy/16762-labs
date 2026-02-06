@@ -142,12 +142,6 @@ class StretchIKDemo(hm.HelloNode):
         q_pitch = q[12]
         q_roll = q[13]
         
-        # Move base first if needed
-        self.move_to_pose({'rotate_mobile_base': q_base_rotate}, blocking=True, duration=4.0)
-        self.move_to_pose({'translate_mobile_base': q_base_translate}, blocking=True, duration=4.0)
-
-        
-        # Move arm and lift together
         self.move_to_pose(
             {
                 'joint_lift': q_lift,
@@ -159,6 +153,8 @@ class StretchIKDemo(hm.HelloNode):
             blocking=True,
             duration=4.0
         )
+        self.move_to_pose({'rotate_mobile_base': q_base_rotate}, blocking=True, duration=4.0)
+        self.move_to_pose({'translate_mobile_base': q_base_translate}, blocking=True, duration=4.0)
 
 
     def move_to_grasp_goal(self, target_point, target_orientation):
@@ -199,7 +195,7 @@ class StretchIKDemo(hm.HelloNode):
         #     print(f"{i}: {link.name}, type={link.joint_type}, bounds={link.bounds}")
             
         # Define target pose
-        target_point = [0.5,  0.3, 0.2]
+        target_point = [0.5,  0.3, 0.15]
         target_orientation = ikpy.utils.geometry.rpy_matrix(0.0, 0.0, -np.pi/2)  # [roll, pitch, yaw]       
         # Move to grasp goal
         self.move_to_grasp_goal(target_point, target_orientation)
