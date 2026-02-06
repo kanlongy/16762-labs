@@ -175,9 +175,12 @@ class StretchIKDemo(hm.HelloNode):
             wait_for_first_pointcloud=False
         )
         
+        self.stow_the_robot()
         # Setup IK chain
         self.chain = setup_ik_chain()
-        
+        for i, link in enumerate(self.chain.links):
+            print(f"{i}: {link.name}, type={link.joint_type}, bounds={link.bounds}")
+            
         # Define target pose
         target_point = [-0.043, -0.441, 0.653]
         target_orientation = ikpy.utils.geometry.rpy_matrix(0.0, 0.0, -np.pi/2)  # [roll, pitch, yaw]
@@ -205,6 +208,7 @@ class StretchIKDemo(hm.HelloNode):
         #     self.move_to_grasp_goal(point, orientation)
   
         # Stop
+        self.stow_the_robot()
         self.stop_the_robot()
 
 
