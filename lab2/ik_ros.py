@@ -229,8 +229,8 @@ class StretchIKDemo(hm.HelloNode):
   
         # Stop
         self.stop_the_robot()
-        StretchIKDemo.destroy_node()
-        hm.HelloNode.shutdown(self)
+        self.destroy_node()
+        self.shutdown()
 
 
 if __name__ == '__main__':
