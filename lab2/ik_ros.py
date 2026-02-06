@@ -143,8 +143,9 @@ class StretchIKDemo(hm.HelloNode):
         q_roll = q[13]
         
         # Move base first if needed
-        self.move_to_pose({'joint_base_rotation': q_base_rotate}, blocking=True, duration=4.0)
-        self.move_to_pose({'joint_base_translation': q_base_translate}, blocking=True, duration=4.0)
+        self.move_to_pose({'rotate_mobile_base': q_base_rotate}, blocking=True, duration=4.0)
+        self.move_to_pose({'translate_mobile_base': q_base_translate}, blocking=True, duration=4.0)
+
         
         # Move arm and lift together
         self.move_to_pose(
