@@ -200,7 +200,7 @@ class StretchIKDemo(hm.HelloNode):
         #     print(f"{i}: {link.name}, type={link.joint_type}, bounds={link.bounds}")
             
         # Define target pose
-        target_point = [-0.043, -0.441, 0.653]
+        target_point = [0.5, -0.3, 0.2]
         target_orientation = ikpy.utils.geometry.rpy_matrix(0.0, 0.0, -np.pi/2)  # [roll, pitch, yaw]
         
         # Move to grasp goal
@@ -230,7 +230,6 @@ class StretchIKDemo(hm.HelloNode):
         # Stop
         self.stop_the_robot()
         self.destroy_node()
-        hm.shutdown()
 
 
 if __name__ == '__main__':
