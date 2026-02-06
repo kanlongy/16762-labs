@@ -152,15 +152,14 @@ class StretchIKDemo(hm.HelloNode):
             {
                 'joint_lift': q_lift,
                 'joint_arm': q_arm,
+                'joint_wrist_yaw': q_yaw,
+                'joint_wrist_pitch': q_pitch,
+                'joint_wrist_roll': q_roll,
             },
             blocking=True,
-            duration=3.0
+            duration=4.0
         )
-        
-        # Move wrist joints
-        self.move_to_pose({'joint_wrist_yaw': q_yaw}, blocking=True, duration=2.0)
-        self.move_to_pose({'joint_wrist_pitch': q_pitch}, blocking=True, duration=2.0)
-        self.move_to_pose({'joint_wrist_roll': q_roll}, blocking=True, duration=2.0)
+
 
     def move_to_grasp_goal(self, target_point, target_orientation):
         """Compute IK and move to grasp goal."""
@@ -200,15 +199,11 @@ class StretchIKDemo(hm.HelloNode):
         #     print(f"{i}: {link.name}, type={link.joint_type}, bounds={link.bounds}")
             
         # Define target pose
-        target_point = [0.5, -0.3, 0.2]
-        target_orientation = ikpy.utils.geometry.rpy_matrix(0.0, 0.0, -np.pi/2)  # [roll, pitch, yaw]
-        
+        target_point = [-0.5, -0.3, 0.2]
+        target_orientation = ikpy.utils.geometry.rpy_matrix(0.0, 0.0, -np.pi/2)  # [roll, pitch, yaw]       
         # Move to grasp goal
         self.move_to_grasp_goal(target_point, target_orientation)
-        print("=== move_to_grasp_goal completed ===")
         print(self.get_current_grasp_pose())
-        print("=== get_current_grasp_pose completed ===")
-
         # print("===z_walk===")
         # z_walk_poses = [
         # ([0.5, -0.3, 0.5], ikpy.utils.geometry.rpy_matrix(0, 0, 0)),
