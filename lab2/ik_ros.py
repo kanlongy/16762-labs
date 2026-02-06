@@ -205,8 +205,10 @@ class StretchIKDemo(hm.HelloNode):
         
         # Move to grasp goal
         self.move_to_grasp_goal(target_point, target_orientation)
+        print("=== move_to_grasp_goal completed ===")
         print(self.get_current_grasp_pose())
-        
+        print("=== get_current_grasp_pose completed ===")
+
         # print("===z_walk===")
         # z_walk_poses = [
         # ([0.5, -0.3, 0.5], ikpy.utils.geometry.rpy_matrix(0, 0, 0)),
@@ -226,9 +228,8 @@ class StretchIKDemo(hm.HelloNode):
         #     self.move_to_grasp_goal(point, orientation)
   
         # Stop
-        self.stow_the_robot()
         self.stop_the_robot()
-
+        print("=== stop_the_robot completed ===")
 
 if __name__ == '__main__':
     node = StretchIKDemo()
