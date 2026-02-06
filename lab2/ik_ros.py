@@ -71,8 +71,25 @@ def setup_ik_chain():
     os.makedirs('/tmp/iktutorial', exist_ok=True)
     new_urdf_path = "/tmp/iktutorial/stretch.urdf"
     modified_urdf.save(new_urdf_path)
-
-    chain = ikpy.chain.Chain.from_urdf_file(new_urdf_path)
+    active_links_mask = [
+    False,  # 0: Base link (fixed)
+    True,   # 1: joint_base_rotation (revolute)
+    True,   # 2: joint_base_translation (prismatic)
+    False,  # 3: joint_mast (fixed) 
+    True,   # 4: joint_lift (prismatic) 
+    False,  # 5: joint_arm_l4 (fixed)
+    True,   # 6: joint_arm_l3 (prismatic) 
+    True,   # 7: joint_arm_l2 (prismatic) 
+    True,   # 8: joint_arm_l1 (prismatic) 
+    True,   # 9: joint_arm_l0 (prismatic) 
+    True,   # 10: joint_wrist_yaw (revolute) 
+    False,  # 11: joint_wrist_yaw_bottom (fixed)
+    True,   # 12: joint_wrist_pitch (revolute) 
+    True,   # 13: joint_wrist_roll (revolute) 
+    False,  # 14: joint_gripper_s3_body (fixed)
+    False,  # 15: joint_grasp_center (fixed)]
+    ]
+    chain = ikpy.chain.Chain.from_urdf_file(new_urdf_path, active_links_mask=active_links_mask)
     
     for link in chain.links:
         print(f"* Link Name: {link.name}, Type: {link.joint_type}")
@@ -178,8 +195,8 @@ class StretchIKDemo(hm.HelloNode):
         self.stow_the_robot()
         # Setup IK chain
         self.chain = setup_ik_chain()
-        for i, link in enumerate(self.chain.links):
-            print(f"{i}: {link.name}, type={link.joint_type}, bounds={link.bounds}")
+        # for i, link in enumerate(self.chain.links):
+        #     print(f"{i}: {link.name}, type={link.joint_type}, bounds={link.bounds}")
             
         # Define target pose
         target_point = [-0.043, -0.441, 0.653]
