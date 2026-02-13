@@ -25,21 +25,21 @@ class MoveMe(HelloNode):
             self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
             # Pose {2}: 
-            [0.4, -0.2, -np.pi / 2,
-            0.5, 0.1, 0.1, 0.1, 0.1,
-            self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
+            #[0.4, -0.2, -np.pi / 2,
+            #0.5, 0.1, 0.1, 0.1, 0.1,
+            #self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
             # Pose {3}: 
-            [0.2, 0.2, -np.pi,
-            0.5, 0.1, 0.1, 0.1, 0.1,
-            np.pi / 4, self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
+            #[0.2, 0.2, -np.pi,
+            #0.5, 0.1, 0.1, 0.1, 0.1,
+            #np.pi / 4, self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
             # Pose {4}: 
-            [0.0, 0.0, 0.1,
-            stow_lift, self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
-            self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
+            #[0.0, 0.0, 0.1,
+            #stow_lift, self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
+            #self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
         ]
-        prev_base = [0.0, 0.0, 0.0]  # Track base position (x, y, theta)
+        prev_base = [0.0, 0.0, 0.0] 
         arm_joints = ['joint_lift', 'joint_arm_l3', 'joint_arm_l2',
                        'joint_arm_l1', 'joint_arm_l0', 'joint_wrist_yaw',
                        'joint_wrist_pitch', 'joint_wrist_roll']
