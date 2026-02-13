@@ -28,7 +28,7 @@ class MoveMe(HelloNode):
             #Pose {3}: 
             [-0.2, -0.4, -np.pi/2,
             self.get_joint_pos('joint_lift'), self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
-            np.pi / 4, np.pi / 4, np.pi / 4],
+            np.pi / 4, np.pi / 8, np.pi / 8],
 
             #Pose {4}: 
             [-0.2, -0.2, -np.pi,
