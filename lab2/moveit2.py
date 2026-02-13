@@ -14,27 +14,28 @@ class MoveMe(HelloNode):
         HelloNode.__init__(self)
         self.main('move_me', 'move_me', wait_for_first_pointcloud=False)
         self.stow_the_robot()
-        waypoints = [
-            #Pose {1}: 
-            [0.2, 0.2, 0.0,
-            0.5, self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
-            self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
+        # waypoints = [
+        #     #Pose {1}: 
+        #     [0.2, 0.2, 0.0,
+        #     0.5, self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
+        #     self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
-            #Pose {2}: 
-            [0.0, -0.5, -np.pi/2,
-            self.get_joint_pos('joint_lift'), 0.1, 0.1, 0.1, 0.1,
-            self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
+        #     #Pose {2}: 
+        #     [0.0, -0.5, -np.pi/2,
+        #     self.get_joint_pos('joint_lift'), 0.1, 0.1, 0.1, 0.1,
+        #     self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
-            #Pose {3}: 
-            [-0.2, -0.4, -np.pi/2,
-            self.get_joint_pos('joint_lift'), 0.05, 0.05, 0.05, 0.05,
-            np.pi / 4, self.get_joint_pos('joint_wrist_pitch'), np.pi / 8],
+        #     #Pose {3}: 
+        #     [-0.2, -0.4, -np.pi/2,
+        #     self.get_joint_pos('joint_lift'), 0.05, 0.05, 0.05, 0.05,
+        #     np.pi / 4, self.get_joint_pos('joint_wrist_pitch'), np.pi / 8],
 
-            #Pose {4}: 
-            [-0.2, -0.2, -np.pi,
-            self.get_joint_pos('joint_lift'), self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
-            self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
-        ] 
+        #     #Pose {4}: 
+        #     [-0.2, -0.2, -np.pi,
+        #     self.get_joint_pos('joint_lift'), self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
+        #     self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
+        # ] 
+
 
         planning_group = 'mobile_base_arm'
         moveit, moveit_plan, planning_params = moveit2_utils.setup_moveit(planning_group)
@@ -48,12 +49,61 @@ class MoveMe(HelloNode):
             # Ordering: [x, y, theta, lift, arm/4, arm/4, arm/4, arm/4, yaw, pitch, roll]
             # For driving the base: the positive x-axis is pointing out of the front of the robot (the flat side of the base). 
             # Positive y-axis is on the left of the robot (opposite direction the arm is facing).
-            goal_state.set_joint_group_positions(planning_group, waypoints[i])
+            # goal_state.set_joint_group_positions(planning_group, waypoints[i])
             # NOTE: You should delete the above example and replace it with your own goal states.
             
             # TODO: Your code will likely go here. Note that I gave you a for loop already, which you can edit and use.
             # For base motion (x, y, theta) each goal state should be defined according to the robot's current position (or its previous goal).
             # Reminder: You can use the RViz GUI for MoveIt 2 to get a better intuition for what these goal positions should be.
+
+            if i == 0:
+                # Pose 0→1: move base + lift arm to 0.5m
+                goal_state.set_joint_group_positions(planning_group,
+                    [0.2, 0.2, 0.0,
+                     0.5,
+                     self.get_joint_pos('joint_arm_l3'),
+                     self.get_joint_pos('joint_arm_l2'),
+                     self.get_joint_pos('joint_arm_l1'),
+                     self.get_joint_pos('joint_arm_l0'),
+                     self.get_joint_pos('joint_wrist_yaw'),
+                     self.get_joint_pos('joint_wrist_pitch'),
+                     self.get_joint_pos('joint_wrist_roll')]
+                )
+
+            elif i == 1:
+                # Pose 1→2: move base + extend arm to 0.4m (0.1 per segment)
+                goal_state.set_joint_group_positions(planning_group,
+                    [0.0, -0.6, -np.pi/2,
+                     self.get_joint_pos('joint_lift'),
+                     0.1, 0.1, 0.1, 0.1,
+                     self.get_joint_pos('joint_wrist_yaw'),
+                     self.get_joint_pos('joint_wrist_pitch'),
+                     self.get_joint_pos('joint_wrist_roll')]
+                )
+
+            elif i == 2:
+                # Pose 2→3: move base + rotate each wrist 45 degrees, prevent the
+                # constraint from move it we put a small angle plus and minus
+                goal_state.set_joint_group_positions(planning_group,
+                    [-0.2, -0.4, -np.pi/2 + 0.1,
+                     self.get_joint_pos('joint_lift'),
+                     self.get_joint_pos('joint_arm_l3'),
+                     self.get_joint_pos('joint_arm_l2'),
+                     self.get_joint_pos('joint_arm_l1'),
+                     self.get_joint_pos('joint_arm_l0'),
+                     self.get_joint_pos('joint_wrist_yaw') + np.radians(45),
+                     self.get_joint_pos('joint_wrist_pitch') + np.radians(45),
+                     self.get_joint_pos('joint_wrist_roll') + np.radians(45)]
+                )
+
+            elif i == 3:
+                # Pose 3→4: move base + stow arm back
+                goal_state.set_joint_group_positions(planning_group,
+                    [-0.2, -0.2, np.pi - 0.1,
+                     0.2,
+                     0.0, 0.0, 0.0, 0.0,
+                     np.radians(180), 0.0, 0.0]
+                )
 
             moveit_plan.set_start_state_to_current_state()
             moveit_plan.set_goal_state(robot_state=goal_state)
