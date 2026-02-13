@@ -32,7 +32,7 @@ class MoveMe(HelloNode):
             # Pose {3}: 
             [0.2, 0.2, -np.pi,
             0.5, 0.1, 0.1, 0.1, 0.1,
-            np.pi / 4, np.pi / 4, np.pi / 4],
+            np.pi / 4, self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
             # Pose {4}: 
             [0.0, 0.0, 0.0,
