@@ -30,19 +30,19 @@ class MoveMe(HelloNode):
             self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
             #Pose {2}: 
-            [0.2, -0.4, -3*np.pi/4,
-            0.5, 0.1, 0.1, 0.1, 0.1,
-            self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
+            # [0.2, -0.4, -np.pi/2,
+            # 0.5, 0.1, 0.1, 0.1, 0.1,
+            # self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
-            #Pose {3}: 
-            [-0.2, -0.2, -5*np.pi/4,
-            0.5, 0.1, 0.1, 0.1, 0.1,
-            np.pi / 4, np.pi / 8, np.pi / 8],
+            # #Pose {3}: 
+            # [-0.2, -0.2, -np.pi,
+            # 0.5, 0.1, 0.1, 0.1, 0.1,
+            # np.pi / 4, np.pi / 8, np.pi / 8],
 
-            # # #Pose {4}: 
-            [0.01, 0.01, -0.01,
-            stow_lift, self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
-            self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
+            # # # #Pose {4}: 
+            # [0.0, 0.0, 0.0,
+            # stow_lift, self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
+            # self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
         ]
  
         for i, wp in enumerate(waypoints):
@@ -51,8 +51,6 @@ class MoveMe(HelloNode):
             # Ordering: [x, y, theta, lift, arm/4, arm/4, arm/4, arm/4, yaw, pitch, roll]
             # TODO: Your code will likely go here. Note that I gave you a for loop already, which you can edit and use.
             goal_state.set_joint_group_positions(planning_group, wp)
-
-    
 
             moveit_plan.set_start_state_to_current_state()
             moveit_plan.set_goal_state(robot_state=goal_state)
