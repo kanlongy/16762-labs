@@ -40,7 +40,7 @@ class MoveMe(HelloNode):
             np.pi / 4, np.pi / 8, np.pi / 8],
 
             # # #Pose {4}: 
-            [-0.1, -0.1, -0.1,
+            [0.01, 0.01, 0.01,
             stow_lift, self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
             self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
         ]
