@@ -19,22 +19,22 @@ class MoveMe(HelloNode):
         planning_group = 'mobile_base_arm'
         moveit, moveit_plan, planning_params = moveit2_utils.setup_moveit(planning_group)
         waypoints = [
-            Pose {1}: 
+            #Pose {1}: 
             [-0.2, 0.2, 0.0,
             0.5, self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
             self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
-            Pose {2}: 
+            #Pose {2}: 
             [0.4, 0.2, np.pi / 2,
             0.5, 0.1, 0.1, 0.1, 0.1,
             self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
-            Pose {3}: 
+            #Pose {3}: 
             [0.2, -0.2, np.pi,
             0.5, 0.1, 0.1, 0.1, 0.1,
             np.pi / 4, self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
-            Pose {4}: 
+            #Pose {4}: 
             [0.0, 0.0, 0,
             stow_lift, self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
             self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
