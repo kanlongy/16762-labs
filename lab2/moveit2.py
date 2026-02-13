@@ -14,76 +14,54 @@ class MoveMe(HelloNode):
         HelloNode.__init__(self)
         self.main('move_me', 'move_me', wait_for_first_pointcloud=False)
         self.stow_the_robot()
-        stow_lift = self.get_joint_pos('joint_lift')
-
-        planning_group = 'mobile_base_arm'
-        moveit, moveit_plan, planning_params = moveit2_utils.setup_moveit(planning_group)
         waypoints = [
-            #pose {0}
-            # [0.0, 0.0, 0.0,
-            # self.get_joint_pos('joint_lift'), self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
-            # self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
-
             #Pose {1}: 
             [0.2, 0.2, 0.0,
             0.5, self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
             self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
             #Pose {2}: 
-            [0.2, -0.4, -np.pi/2,
-            0.5, 0.1, 0.1, 0.1, 0.1,
+            [0.0, -0.6, -np.pi/2,
+            self.get_joint_pos('joint_lift'), 0.1, 0.1, 0.1, 0.1,
             self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
             #Pose {3}: 
-            [-0.2, -0.2, -np.pi,
-            0.5, 0.1, 0.1, 0.1, 0.1,
+            [-0.2, -0.4, -np.pi/2,
+            self.get_joint_pos('joint_lift'), self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
             np.pi / 4, np.pi / 4, np.pi / 4],
 
             #Pose {4}: 
-            [0.0, 0.0, 0.0,
-            stow_lift, self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
-            self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
-        ]
-
-        prev_positions = [
-            #pose {0}
-            [0.0, 0.0, 0.0,
+            [-0.2, -0.2, -np.pi,
             self.get_joint_pos('joint_lift'), self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
             self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
+        ] 
 
-            #Pose {1}: 
-            [0.2, 0.2, 0.0,
-            0.5, self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
-            self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
-
-            #Pose {2}: 
-            [0.2, -0.4, -np.pi/2,
-            0.5, 0.1, 0.1, 0.1, 0.1,
-            self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
-
-            # #Pose {3}: 
-            [-0.2, -0.2, -np.pi,
-            0.5, 0.1, 0.1, 0.1, 0.1,
-            np.pi / 4, np.pi / 4, np.pi / 4],
-        ]
-
-
+        planning_group = 'mobile_base_arm'
+        moveit, moveit_plan, planning_params = moveit2_utils.setup_moveit(planning_group)
+        
         for i in range(4):
-            print(f'--- Planning Step {i}: Pose {{{i}}} -> Pose {{{i+1}}} ---')
-            # wp is already an absolute goal in world frame; planner computes wp - prev as displacement
+            print(f'--- Planning Step {i} ---')
             goal_state = RobotState(moveit.get_robot_model())
-            prev_state = RobotState(moveit.get_robot_model())
-            prev_state.set_joint_group_positions(planning_group, prev_positions[i])
-            goal_state.set_joint_group_positions(planning_group, waypoints[i])
 
-            moveit_plan.set_start_state(robot_state=prev_state)
+            # Example goal state: demonstrates commanding the robot to move forward by 0.3 meters
+            # We pass in the current joint position as the goal for each joint in the arm + wrist since we don't want them to move
+            # Ordering: [x, y, theta, lift, arm/4, arm/4, arm/4, arm/4, yaw, pitch, roll]
+            # For driving the base: the positive x-axis is pointing out of the front of the robot (the flat side of the base). 
+            # Positive y-axis is on the left of the robot (opposite direction the arm is facing).
+            goal_state.set_joint_group_positions(planning_group, waypoints[i])
+            # NOTE: You should delete the above example and replace it with your own goal states.
+            
+            # TODO: Your code will likely go here. Note that I gave you a for loop already, which you can edit and use.
+            # For base motion (x, y, theta) each goal state should be defined according to the robot's current position (or its previous goal).
+            # Reminder: You can use the RViz GUI for MoveIt 2 to get a better intuition for what these goal positions should be.
+
+            moveit_plan.set_start_state_to_current_state()
             moveit_plan.set_goal_state(robot_state=goal_state)
             
             plan = moveit_plan.plan(parameters=planning_params)
             # print(plan.trajectory.get_robot_trajectory_msg())
+    
             self.execute_plan(plan)
-
-
 
     def execute_plan(self, plan):
         # NOTE: You don't need to edit this function
