@@ -19,31 +19,27 @@ class MoveMe(HelloNode):
         planning_group = 'mobile_base_arm'
         moveit, moveit_plan, planning_params = moveit2_utils.setup_moveit(planning_group)
         waypoints = [
-            # Pose {1}: 
-            [-0.2, -0.2, 0.0,
+            Pose {1}: 
+            [-0.2, 0.2, 0.0,
             0.5, self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
             self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
-            # Pose {2}: 
-            #[0.4, -0.2, -np.pi / 2,
-            #0.5, 0.1, 0.1, 0.1, 0.1,
-            #self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
+            Pose {2}: 
+            [0.4, 0.2, np.pi / 2,
+            0.5, 0.1, 0.1, 0.1, 0.1,
+            self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
-            # Pose {3}: 
-            #[0.2, 0.2, -np.pi,
-            #0.5, 0.1, 0.1, 0.1, 0.1,
-            #np.pi / 4, self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
+            Pose {3}: 
+            [0.2, -0.2, np.pi,
+            0.5, 0.1, 0.1, 0.1, 0.1,
+            np.pi / 4, self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
 
-            # Pose {4}: 
-            #[0.0, 0.0, 0.1,
-            #stow_lift, self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
-            #self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
+            Pose {4}: 
+            [0.0, 0.0, 0,
+            stow_lift, self.get_joint_pos('joint_arm_l3'), self.get_joint_pos('joint_arm_l2'),self.get_joint_pos('joint_arm_l1'), self.get_joint_pos('joint_arm_l0'),
+            self.get_joint_pos('joint_wrist_yaw'), self.get_joint_pos('joint_wrist_pitch'), self.get_joint_pos('joint_wrist_roll')],
         ]
-        prev_base = [0.0, 0.0, 0.0] 
-        arm_joints = ['joint_lift', 'joint_arm_l3', 'joint_arm_l2',
-                       'joint_arm_l1', 'joint_arm_l0', 'joint_wrist_yaw',
-                       'joint_wrist_pitch', 'joint_wrist_roll']
-
+ 
         for i, wp in enumerate(waypoints):
             print(f'--- Planning Step {i}: Pose {{{i}}} -> Pose {{{i+1}}} ---')
             goal_state = RobotState(moveit.get_robot_model())
@@ -51,20 +47,15 @@ class MoveMe(HelloNode):
             # TODO: Your code will likely go here. Note that I gave you a for loop already, which you can edit and use.
             goal_state.set_joint_group_positions(planning_group, wp)
 
-            # Manually build start state: use tracked base position + actual arm joints
-            start_state = RobotState(moveit.get_robot_model())
-            current_arm = [self.get_joint_pos(j) for j in arm_joints]
-            start_state.set_joint_group_positions(planning_group, prev_base + current_arm)
+    
 
-            moveit_plan.set_start_state(robot_state=start_state)
+            moveit_plan.set_start_state_to_current_state()
             moveit_plan.set_goal_state(robot_state=goal_state)
             
             plan = moveit_plan.plan(parameters=planning_params)
             # print(plan.trajectory.get_robot_trajectory_msg())
             self.execute_plan(plan)
 
-            # Update tracked base position to this step's goal
-            prev_base = wp[:3]
 
     def execute_plan(self, plan):
         # NOTE: You don't need to edit this function
