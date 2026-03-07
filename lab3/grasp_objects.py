@@ -19,8 +19,9 @@ class IKTargetFollowing(HelloNode):
     def __init__(self):
         HelloNode.__init__(self)
 
-        self.delta = 0.05 # cm
-        self.safety_z = 0.05
+        self.delta = 0.03 # cm
+        self.safety_x = 0.02
+        self.safety_z = 0.06
         self.target_frame = 'base_link'
         self.gripper_frame = 'link_grasp_center'
         self.tf_buffer = None
@@ -119,6 +120,7 @@ class IKTargetFollowing(HelloNode):
         #   otherwise, the goal is close and we can move there directly
         safe_goal = goal_pos.copy()
         safe_goal[2] += self.safety_z
+        safe_goal[0] += self.safety_x
         diff = safe_goal - gripper_pos
         dist = np.linalg.norm(diff)
         if dist > self.delta:
