@@ -19,7 +19,7 @@ class IKTargetFollowing(HelloNode):
     def __init__(self):
         HelloNode.__init__(self)
 
-        self.delta = 0.07 # m — grasp threshold
+        self.delta = 0.1 # m — grasp threshold
         self.lock_distance = 0.20  # m — lock goal once gripper is this close
         self.locked_goal = None    # frozen goal_pos (np.array) once inside lock_distance
         self.target_frame = 'base_link'
@@ -132,7 +132,7 @@ class IKTargetFollowing(HelloNode):
 
         # Never approach from below — clamp waypoint z to be at least goal z.
         # This prevents the arm from going under the table edge before lifting.
-        safety_z = 0.03
+        safety_z = 0.02
         waypoint_pos[2] = max(waypoint_pos[2], goal_pos[2] + safety_z)
 
         # TODO: -------------- end ---------------
