@@ -124,6 +124,7 @@ class YOLOEObjectDetector(Node):
         if self.goal_pose_msg is None:
             print("OBJECT NOT DETECTED, no pose to publish")
             return
+    
         self.goal_pub.publish(self.goal_pose_msg)
         if detections is None or len(detections) == 0:
             print("(reusing last goal — no detection this frame)")
@@ -145,6 +146,8 @@ class YOLOEObjectDetector(Node):
         #   then get the centroid of the resulting pointcloud to use as the goal pose (instead of the 2D centroid in part 1)
         # filter detections to only the target object if one is specified
         if self.target_obj is not None:
+            for d in detections:
+                print(repr(d['label']), "==", repr(self.target_obj), "?", d['label'] == self.target_obj)
             detections = [d for d in detections if d['label'] == self.target_obj]
             if len(detections) == 0:
                 return
