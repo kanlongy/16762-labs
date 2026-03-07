@@ -20,6 +20,7 @@ class IKTargetFollowing(HelloNode):
         HelloNode.__init__(self)
 
         self.delta = 0.05 # cm
+        self.safety_z = 0.02
         self.target_frame = 'base_link'
         self.gripper_frame = 'link_grasp_center'
         self.tf_buffer = None
@@ -97,9 +98,10 @@ class IKTargetFollowing(HelloNode):
         ik.print_q(q_soln)
         if q_soln is not None:
             ik.move_to_configuration(self, q_soln)
-
+            safe_goal = goal_pos.copy()
+            safe_goal[2] += self.safety_z
             # if gripper is close enough to goal, grasp the object
-            dist = np.linalg.norm(goal_pos - gripper_pos)
+            dist = np.linalg.norm(safe_goal - gripper_pos)
             if dist <= self.delta:
                 self.move_to_pose({'gripper_aperture': -0.2}, blocking=True)
                 self.move_to_pose({'joint_arm': 0.0}, blocking=True)
@@ -113,18 +115,20 @@ class IKTargetFollowing(HelloNode):
         #   at least 2Hz) to reach before the next goal is published
         #   in this case, find a waypoint toward the goal position that is delta away from the gripper position (make some progress towards the goal)
         #   otherwise, the goal is close and we can move there directly
-        diff = goal_pos - gripper_pos
+        safe_goal = goal_pos.copy()
+        safe_goal[2] += self.safety_z
+        diff = safe_goal - gripper_pos
         dist = np.linalg.norm(diff)
         if dist > self.delta:
             direction = diff / dist
             waypoint_pos = gripper_pos + direction * self.delta
         else:
-            waypoint_pos = goal_pos
+            waypoint_pos = safe_goal
 
         # Never approach from below — clamp waypoint z to be at least goal z.
         # This prevents the arm from going under the table edge before lifting.
-        waypoint_pos[2] = max(waypoint_pos[2], goal_pos[2])
-
+        waypoint_pos[2] = max(waypoint_pos[2], safe_goal[2])
+        print("safe_goal:", safe_goal, "gripper_pos:", gripper_pos, "dist:", dist)
         # TODO: -------------- end ---------------
 
         # use an zero rotation for the waypoint (its a point so we don't need to worry about orientation)
@@ -160,7 +164,6 @@ class IKTargetFollowing(HelloNode):
         self.stow_the_robot()
         self.move_to_ready_pose()
         print("At Ready Pose")
-
 
         # TODO: ------------- start --------------
         # fill with your response
