@@ -11,6 +11,7 @@ from tf2_geometry_msgs import TransformStamped
 from sensor_msgs.msg import JointState
 import ik_ros_utils as ik
 import ikpy
+from tf2_geometry_msgs import TransformStamped, do_transform_pose_stamped
 
 # Make sure to run:
 #   ros2 launch stretch_core stretch_driver.launch.py
@@ -47,7 +48,12 @@ class IKTargetFollowing(HelloNode):
         # TODO: ------------- start --------------
         # fill with your response
         #   transform the goal pose to the base frame
-        goal_transformed = self.tf_buffer.transform(goal_msg,self.target_frame)
+        transform = self.tf_buffer.lookup_transform(
+            self.target_frame,
+            goal_msg.header.frame_id,
+            rclpy.time.Time(),
+        )
+        goal_transformed = do_transform_pose_stamped(goal_msg, transform)
 
         # TODO: -------------- end ---------------
 
