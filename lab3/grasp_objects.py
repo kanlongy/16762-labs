@@ -20,7 +20,7 @@ class IKTargetFollowing(HelloNode):
         HelloNode.__init__(self)
 
         self.delta = 0.03 # cm
-        self.safety_x = 0.02
+        self.safety_x = 0.06
         self.safety_z = 0.03
         self.target_frame = 'base_link'
         self.gripper_frame = 'link_grasp_center'
