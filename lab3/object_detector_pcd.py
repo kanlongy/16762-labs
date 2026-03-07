@@ -179,6 +179,9 @@ class YOLOEObjectDetector(Node):
         if len(points_3d) == 0:
             return
         centroid_3d = np.mean(points_3d, axis=0)
+        if target['confidence'] < 0.9:
+            print(f"Low confidence ({target['confidence']:.2f}) — reusing last goal pose")
+            return 
         self.goal_pose_msg = detection_utils.get_pose_msg(
             self.latest_color_cam_info.header.stamp,
             self.latest_color_cam_info.header.frame_id,
