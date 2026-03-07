@@ -20,7 +20,7 @@ class IKTargetFollowing(HelloNode):
         HelloNode.__init__(self)
 
         self.delta = 0.05 # cm
-        self.safety_z = 0.05
+        self.safety_z = 0.00
         self.target_frame = 'base_link'
         self.gripper_frame = 'link_grasp_center'
         self.tf_buffer = None
@@ -28,7 +28,7 @@ class IKTargetFollowing(HelloNode):
         self.joint_states_lock = threading.Lock()
         self.last_goal_pos = None
 
-        
+
     def joint_states_callback(self, msg):
         # unpacks joint state messages for what works with/is expected by ikpy
         with self.joint_states_lock:
