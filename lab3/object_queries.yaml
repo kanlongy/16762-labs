@@ -6,8 +6,8 @@ queries:
   # # - black water bottle # reflective metal surface, poor depth values
   # - black coffee mug
   # - pink cat figure
-  - pink cup
-  - water bottle
-  - traffic cone
-target: water bottle
+  - yellow cup
+  - white water bottle
+  - blue ball
+target: yellow cup
   
