@@ -7,7 +7,7 @@ from control_msgs.action import FollowJointTrajectory
 from hello_helpers.hello_misc import HelloNode
 import threading
 import tf2_ros
-from tf2_geometry_msgs import TransformStamped
+from tf2_geometry_msgs import TransformStamped, do_transform_pose_stamped
 from sensor_msgs.msg import JointState
 import ik_ros_utils as ik
 import ikpy
@@ -19,7 +19,9 @@ class IKTargetFollowing(HelloNode):
     def __init__(self):
         HelloNode.__init__(self)
 
-        self.delta = 0.05 # cm
+        self.delta = 0.05 # m — grasp threshold
+        self.lock_distance = 0.20  # m — lock goal once gripper is this close
+        self.locked_goal = None    # frozen goal_pos (np.array) once inside lock_distance
         self.target_frame = 'base_link'
         self.gripper_frame = 'link_grasp_center'
         self.tf_buffer = None
@@ -40,13 +42,15 @@ class IKTargetFollowing(HelloNode):
             self.joint_state[joint_name] = joint_states.position[i]
 
     def get_goal_pose_in_base_frame(self, goal_msg):
-        # TODO: ------------- start --------------
-        # fill with your response
-        #   transform the goal pose to the base frame
-        goal_transformed = self.tf_buffer.transform(goal_msg,self.target_frame)
-
-        # TODO: -------------- end ---------------
-
+        # Use the *current* TF (rclpy.time.Time()) rather than goal_msg's stamp,
+        # because the goal stamp can be much older than the TF buffer window and
+        # cause "extrapolation into the past" errors.
+        transform = self.tf_buffer.lookup_transform(
+            self.target_frame,
+            goal_msg.header.frame_id,
+            rclpy.time.Time(),
+        )
+        goal_transformed = do_transform_pose_stamped(goal_msg, transform)
         return goal_transformed
 
     def get_gripper_pose_in_base_frame(self):
@@ -62,28 +66,29 @@ class IKTargetFollowing(HelloNode):
         return gripper_transformed
 
     def goal_callback(self, goal_msg):
-        # print(msg)
-        # self.get_logger().info(f'Received goal pose: {msg.pose}')
         try:
-            goal_transformed = self.get_goal_pose_in_base_frame(goal_msg)
             gripper_transformed = self.get_gripper_pose_in_base_frame()
-
-            goal_pos = ik.get_xyz_from_msg(goal_transformed)
             gripper_pos = ik.get_xyz_from_msg(gripper_transformed)
-        except:
-            print("Error getting transforms")
+
+            if self.locked_goal is not None:
+                # --- LOCK PHASE: gripper is close; ignore new YOLO updates ---
+                goal_pos = self.locked_goal
+                print(f"[LOCKED] goal_pos: {np.round(goal_pos, 3)}  gripper_pos: {np.round(gripper_pos, 3)}")
+            else:
+                # --- TRACKING PHASE: use latest YOLO goal ---
+                goal_transformed = self.get_goal_pose_in_base_frame(goal_msg)
+                goal_pos = ik.get_xyz_from_msg(goal_transformed)
+                dist_to_goal = np.linalg.norm(goal_pos - gripper_pos)
+                if dist_to_goal <= self.lock_distance:
+                    self.locked_goal = goal_pos.copy()
+                    print(f"[LOCK] Gripper within {self.lock_distance}m — goal locked at {np.round(goal_pos, 3)}")
+                else:
+                    print(f"goal_pos: {np.round(goal_pos, 3)}  gripper_pos: {np.round(gripper_pos, 3)}")
+        except Exception as e:
+            print(f"Error getting transforms: {e}")
             return
 
         waypoint_pos, waypoint_orient = self.compute_waypoint_to_goal(goal_pos, gripper_pos)
-        print(f"goal_pos: {np.round(goal_pos, 3)}  gripper_pos: {np.round(gripper_pos, 3)}  waypoint: {np.round(waypoint_pos, 3)}")
-
-        # TODO: ------------- start --------------
-        # fill with your response
-        #   use the same functions you used for IK in Lab 2, now in `ik_ros_utils.py`, 
-        #   to move the robot to the transformed goal point.
-        q_init = ik.get_current_configuration(self.joint_state)
-        q_soln = ik.get_grasp_goal(waypoint_pos, waypoint_orient, q_init)
-        # TODO: -------------- end ---------------
 
         # NOTE: if you find that the robot's base is moving too much, its likely that the ik solver is
         # struggling to find solutions without the base doing most of the work to achieve the waypoint pose.
@@ -94,6 +99,9 @@ class IKTargetFollowing(HelloNode):
         # you can also try adjusting joint limits of the base trans/rot in `ik_ros_utils.py` to be much smaller
         # one or some combination of these should help!
 
+        q_init = ik.get_current_configuration(self.joint_state)
+        q_soln = ik.get_grasp_goal(waypoint_pos, waypoint_orient, q_init)
+
         ik.print_q(q_soln)
         if q_soln is not None:
             ik.move_to_configuration(self, q_soln)
@@ -103,6 +111,7 @@ class IKTargetFollowing(HelloNode):
             if dist <= self.delta:
                 self.move_to_pose({'gripper_aperture': -0.2}, blocking=True)
                 self.move_to_pose({'joint_arm': 0.0}, blocking=True)
+                self.locked_goal = None  # reset so next object can be tracked
 
     def compute_waypoint_to_goal(self, goal_pos, gripper_pos):
 
