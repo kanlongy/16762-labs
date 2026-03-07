@@ -77,7 +77,7 @@ class YOLOEObjectDetector(Node):
         self.goal_pose_msg = None
         # Only accept detections above this confidence to update the stored goal.
         # Frames where the gripper occludes the object will typically fall below this.
-        self.good_conf_threshold = 0.7
+        self.good_conf_threshold = 0.8
 
         # -----------------------------------------------------
 
