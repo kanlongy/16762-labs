@@ -75,9 +75,6 @@ class YOLOEObjectDetector(Node):
         self.timer = self.create_timer(timer_period, self.publish_goals_callback)
         self.goal_pub = self.create_publisher(PoseStamped, '/object_detector/goal_pose', 10)
         self.goal_pose_msg = None
-        # Only accept detections above this confidence to update the stored goal.
-        # Frames where the gripper occludes the object will typically fall below this.
-        self.good_conf_threshold = 0.8
 
         # -----------------------------------------------------
 
@@ -131,8 +128,6 @@ class YOLOEObjectDetector(Node):
             self.goal_pub.publish(self.goal_pose_msg)
             print()
             print("---------- Published Goal Pose ----------")
-            if detections is None or len(detections) == 0:
-                print("  (using last high-confidence goal — current frame had no detection)")
 
 
 
@@ -179,15 +174,11 @@ class YOLOEObjectDetector(Node):
         if len(points_3d) == 0:
             return
         centroid_3d = np.mean(points_3d, axis=0)
-        # Only update the stored goal when confidence is high enough.
-        # This prevents noisy low-confidence detections (e.g. gripper occlusion)
-        # from overwriting the last reliable goal pose.
-        if target['confidence'] >= self.good_conf_threshold:
-            self.goal_pose_msg = detection_utils.get_pose_msg(
-                self.latest_color_cam_info.header.stamp,
-                self.latest_color_cam_info.header.frame_id,
-                centroid_3d
-            )
+        self.goal_pose_msg = detection_utils.get_pose_msg(
+            self.latest_color_cam_info.header.stamp,
+            self.latest_color_cam_info.header.frame_id,
+            centroid_3d
+        )
         # TODO: -------------- end ---------------
 
 
