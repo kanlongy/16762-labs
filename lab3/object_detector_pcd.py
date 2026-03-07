@@ -174,6 +174,8 @@ class YOLOEObjectDetector(Node):
                 y_orig = h_orig - 1 - x_rot
                 xyz = detection_utils.pixel_to_3d((x_orig, y_orig), depth, self.latest_color_cam_info)
                 points_3d.append(xyz)
+        
+        print(f"mask pixels: {len(xs_rot)}, valid depth pixels: {len(points_3d)}")
         if len(points_3d) == 0:
             return
         centroid_3d = np.mean(points_3d, axis=0)
