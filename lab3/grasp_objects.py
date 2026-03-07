@@ -19,7 +19,7 @@ class IKTargetFollowing(HelloNode):
     def __init__(self):
         HelloNode.__init__(self)
 
-        self.delta = 0.05 # m — grasp threshold
+        self.delta = 0.08 # m — grasp threshold
         self.lock_distance = 0.20  # m — lock goal once gripper is this close
         self.locked_goal = None    # frozen goal_pos (np.array) once inside lock_distance
         self.target_frame = 'base_link'
