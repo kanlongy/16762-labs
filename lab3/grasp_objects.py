@@ -26,7 +26,9 @@ class IKTargetFollowing(HelloNode):
         self.tf_buffer = None
         self.tf_listener = None
         self.joint_states_lock = threading.Lock()
-    
+        self.last_goal_pos = None
+
+        
     def joint_states_callback(self, msg):
         # unpacks joint state messages for what works with/is expected by ikpy
         with self.joint_states_lock:

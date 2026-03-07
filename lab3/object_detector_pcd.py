@@ -124,10 +124,10 @@ class YOLOEObjectDetector(Node):
         if self.goal_pose_msg is None:
             print("OBJECT NOT DETECTED, no pose to publish")
             return
-        else:
-            self.goal_pub.publish(self.goal_pose_msg)
-            print()
-            print("---------- Published Goal Pose ----------")
+        self.goal_pub.publish(self.goal_pose_msg)
+        if detections is None or len(detections) == 0:
+            print("(reusing last goal — no detection this frame)")
+        print("---------- Published Goal Pose ----------")
 
 
 
