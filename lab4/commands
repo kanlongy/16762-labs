@@ -1,0 +1,15 @@
+----Part1:mapping---------
+
+stretch_robot_stow.py
+ros2 launch stretch_nav2 offline_mapping.launch.py
+stretch_xbox_controller_teleop.py
+
+mkdir ${HELLO_FLEET_PATH}/maps
+ros2 run nav2_map_server map_saver_cli -f ${HELLO_FLEET_PATH}/maps/<map_name>
+eog ${HELLO_FLEET_PATH}/maps/<map_name>.pgm
+
+----part2:navigation------
+
+ros2 launch stretch_nav2 navigation.launch.py map:=${HELLO_FLEET_PATH}/maps/<map_name>.yaml
+python stretch_navigation.py
+
