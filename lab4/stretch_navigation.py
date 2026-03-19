@@ -119,7 +119,7 @@ def main():
     navigator.waitUntilNav2Active()
 
     # Build the list of goal PoseStampeds from the waypoint definitions
-    route_poses = [make_pose(navigator, x, y, yaw) for x, y, yaw in waypoint_defs]
+    route_poses = [make_pose(navigator, x, y, z, w) for x, y, z, w in waypoint_defs]
 
     # -----------------------------------------------------------------------
     # OPTION A (default): send all waypoints at once with followWaypoints
