@@ -102,8 +102,8 @@ def main():
             [0.0,  0.0,  0.0, 1.0  ],   # Pose 0 – starting pose
             [1.4, -1.0, -0.6, 0.8  ],   # Pose 1 – facing +x
             [2.3, -4.6, -0.0, 1.0  ],   # Pose 2 – facing +y  (~3 m from Pose 1)
-            [3.3, -9.1, -0.6, 0.8  ],   # Pose 3 – facing -x  (~3 m from Pose 2)
-            [3.9, -13.7,-0.8, 0.6  ],   # Pose 4 – facing -y  (~2.5 m from Pose 3)
+            [0.7, -0.05, 0.0, 1.0  ],   # Pose 3 – facing -x  (~3 m from Pose 2)
+            [2.9, 0.27, 0.14, 0.97  ],   # Pose 4 – facing -y  (~2.5 m from Pose 3)
         ]
 
         # ------ Set the initial pose (starting position in the map) ------
