@@ -17,3 +17,4 @@ scp hello-robot@stretch3159.wifi.local.cmu.edu:/home/hello-robot/stretch_user/ma
 ros2 launch stretch_nav2 navigation.launch.py map:=${HELLO_FLEET_PATH}/maps/kanlongy.yaml
 python stretch_navigation.py
 
+scp hello-robot@stretch3159.wifi.local.cmu.edu:/home/hello-robot/16762/kanlongy/16762-labs/lab4/navigation_video.avi .
