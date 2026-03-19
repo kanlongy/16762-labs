@@ -98,6 +98,7 @@ def main():
     # • Adjust these coordinates to match your actual map after localizing.
     # -----------------------------------------------------------------------
     waypoint_defs = [
+        [ 0.0,  0.0,  0.0          ],   # Pose 0 – starting pose
         [ 2.0,  0.0,  0.0          ],   # Pose 1 – facing +x
         [ 2.0,  3.0,  math.pi / 2  ],   # Pose 2 – facing +y  (~3 m from Pose 1)
         [-1.0,  3.0,  math.pi      ],   # Pose 3 – facing -x  (~3 m from Pose 2)
