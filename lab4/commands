@@ -5,11 +5,15 @@ ros2 launch stretch_nav2 offline_mapping.launch.py
 stretch_xbox_controller_teleop.py
 
 mkdir ${HELLO_FLEET_PATH}/maps
-ros2 run nav2_map_server map_saver_cli -f ${HELLO_FLEET_PATH}/maps/<map_name>
-eog ${HELLO_FLEET_PATH}/maps/<map_name>.pgm
+ros2 run nav2_map_server map_saver_cli -f ${HELLO_FLEET_PATH}/maps/kanlongy 
+eog ${HELLO_FLEET_PATH}/maps/kanlongy.pgm 
+
+echo $HELLO_FLEET_PATH
+scp hello-robot@stretch3159.wifi.local.cmu.edu:/home/hello-robot/stretch_user/maps/kanlongy.pgm .
+scp hello-robot@stretch3159.wifi.local.cmu.edu:/home/hello-robot/stretch_user/maps/kanlongy.yaml .
 
 ----part2:navigation------
 
-ros2 launch stretch_nav2 navigation.launch.py map:=${HELLO_FLEET_PATH}/maps/<map_name>.yaml
+ros2 launch stretch_nav2 navigation.launch.py map:=${HELLO_FLEET_PATH}/maps/kanlongy.yaml
 python stretch_navigation.py
 

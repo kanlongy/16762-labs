@@ -72,16 +72,16 @@ class HeadCameraRecorder(Node):
             self.get_logger().info(f'Video saved to "{self.output_path}"')
 
 
-def make_pose(navigator, x, y, yaw):
+def make_pose(navigator, x, y, z,w):
     """Build a PoseStamped in the map frame from (x, y, yaw_rad)."""
     pose = PoseStamped()
     pose.header.frame_id = 'map'
     pose.header.stamp = navigator.get_clock().now().to_msg()
     pose.pose.position.x = x
     pose.pose.position.y = y
-    qz, qw = yaw_to_quaternion(yaw)
-    pose.pose.orientation.z = qz
-    pose.pose.orientation.w = qw
+    # qz, qw = yaw_to_quaternion(yaw)
+    pose.pose.orientation.z = z
+    pose.pose.orientation.w = w
     return pose
 
 
@@ -98,11 +98,11 @@ def main():
     # • Adjust these coordinates to match your actual map after localizing.
     # -----------------------------------------------------------------------
     waypoint_defs = [
-        [ 0.0,  0.0,  0.0          ],   # Pose 0 – starting pose
-        [ 2.0,  0.0,  0.0          ],   # Pose 1 – facing +x
-        [ 2.0,  3.0,  math.pi / 2  ],   # Pose 2 – facing +y  (~3 m from Pose 1)
-        [-1.0,  3.0,  math.pi      ],   # Pose 3 – facing -x  (~3 m from Pose 2)
-        [-1.0,  0.5, -math.pi / 2  ],   # Pose 4 – facing -y  (~2.5 m from Pose 3)
+        [0.0,  0.0,  0.0, 1.0  ],   # Pose 0 – starting pose
+        [1.7, -1.0, -0.8, 0.5  ],   # Pose 1 – facing +x
+        [1.6, -3.2, -0.7, 0.7  ],   # Pose 2 – facing +y  (~3 m from Pose 1)
+        [3.0, -4.7,  0.1, 1.0  ],   # Pose 3 – facing -x  (~3 m from Pose 2)
+        [3.8, -8.1, -0.7, 0.8  ],   # Pose 4 – facing -y  (~2.5 m from Pose 3)
     ]
 
     # ------ Set the initial pose (starting position in the map) ------
