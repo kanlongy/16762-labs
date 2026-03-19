@@ -90,6 +90,7 @@ def main():
 
     navigator = BasicNavigator()
     recorder = HeadCameraRecorder(output_path='navigation_video.avi', fps=10)
+    try:
 
     # -----------------------------------------------------------------------
     # 4 target poses in the AI Maker Space: [x (m), y (m), yaw (rad)]
@@ -97,78 +98,83 @@ def main():
     # • Every pair is at least 2 m apart.
     # • Adjust these coordinates to match your actual map after localizing.
     # -----------------------------------------------------------------------
-    waypoint_defs = [
-        [0.0,  0.0,  0.0, 1.0  ],   # Pose 0 – starting pose
-        [1.4, -1.0, -0.6, 0.8  ],   # Pose 1 – facing +x
-        # [1.6, -3.2, -0.7, 0.7  ],   # Pose 2 – facing +y  (~3 m from Pose 1)
-        # [3.0, -4.7,  0.1, 1.0  ],   # Pose 3 – facing -x  (~3 m from Pose 2)
-        # [3.8, -8.1, -0.7, 0.8  ],   # Pose 4 – facing -y  (~2.5 m from Pose 3)
-    ]
+        waypoint_defs = [
+            [0.0,  0.0,  0.0, 1.0  ],   # Pose 0 – starting pose
+            [1.4, -1.0, -0.6, 0.8  ],   # Pose 1 – facing +x
+            # [1.6, -3.2, -0.7, 0.7  ],   # Pose 2 – facing +y  (~3 m from Pose 1)
+            # [3.0, -4.7,  0.1, 1.0  ],   # Pose 3 – facing -x  (~3 m from Pose 2)
+            # [3.8, -8.1, -0.7, 0.8  ],   # Pose 4 – facing -y  (~2.5 m from Pose 3)
+        ]
 
-    # ------ Set the initial pose (starting position in the map) ------
-    initial_pose = PoseStamped()
-    initial_pose.header.frame_id = 'map'
-    initial_pose.header.stamp = navigator.get_clock().now().to_msg()
-    initial_pose.pose.position.x = 0.0
-    initial_pose.pose.position.y = 0.0
-    initial_pose.pose.orientation.z = 0.0
-    initial_pose.pose.orientation.w = 1.0
-    navigator.setInitialPose(initial_pose)
+        # ------ Set the initial pose (starting position in the map) ------
+        initial_pose = PoseStamped()
+        initial_pose.header.frame_id = 'map'
+        initial_pose.header.stamp = navigator.get_clock().now().to_msg()
+        initial_pose.pose.position.x = 0.0
+        initial_pose.pose.position.y = 0.0
+        initial_pose.pose.orientation.z = 0.0
+        initial_pose.pose.orientation.w = 1.0
+        navigator.setInitialPose(initial_pose)
 
-    # Wait for Nav2 to fully activate
-    navigator.waitUntilNav2Active()
+        # Wait for Nav2 to fully activate
+        navigator.waitUntilNav2Active()
 
-    # Build the list of goal PoseStampeds from the waypoint definitions
-    route_poses = [make_pose(navigator, x, y, z, w) for x, y, z, w in waypoint_defs]
+        # Build the list of goal PoseStampeds from the waypoint definitions
+        route_poses = [make_pose(navigator, x, y, z, w) for x, y, z, w in waypoint_defs]
 
-    # -----------------------------------------------------------------------
-    # OPTION A (default): send all waypoints at once with followWaypoints
-    # -----------------------------------------------------------------------
-    nav_start = navigator.get_clock().now()
-    navigator.followWaypoints(route_poses)
+        # -----------------------------------------------------------------------
+        # OPTION A (default): send all waypoints at once with followWaypoints
+        # -----------------------------------------------------------------------
+        nav_start = navigator.get_clock().now()
+        navigator.followWaypoints(route_poses)
 
-    i = 0
-    while not navigator.isTaskComplete():
-        i += 1
-        # Drive the recorder's subscription callback so frames keep being written
-        rclpy.spin_once(recorder, timeout_sec=0.05)
+        i = 0
+        while not navigator.isTaskComplete():
+            i += 1
+            # Drive the recorder's subscription callback so frames keep being written
+            rclpy.spin_once(recorder, timeout_sec=0.05)
 
-        feedback = navigator.getFeedback()
-        if feedback and i % 5 == 0:
-            navigator.get_logger().info(
-                f'Waypoint {feedback.current_waypoint + 1}/{len(route_poses)}'
-            )
-            now = navigator.get_clock().now()
-            if now - nav_start > Duration(seconds=600.0):
-                navigator.cancelTask()
+            feedback = navigator.getFeedback()
+            if feedback and i % 5 == 0:
+                navigator.get_logger().info(
+                    f'Waypoint {feedback.current_waypoint + 1}/{len(route_poses)}'
+                )
+                now = navigator.get_clock().now()
+                if now - nav_start > Duration(seconds=600.0):
+                    navigator.cancelTask()
 
-    # -----------------------------------------------------------------------
-    # OPTION B (alternative): visit each pose individually with goToPose.
-    # Uncomment this block and comment out OPTION A above to use it.
-    # -----------------------------------------------------------------------
-    # nav_start = navigator.get_clock().now()
-    # for idx, pose in enumerate(route_poses):
-    #     navigator.get_logger().info(f'Navigating to pose {idx + 1}/{len(route_poses)}')
-    #     navigator.goToPose(pose)
-    #     while not navigator.isTaskComplete():
-    #         rclpy.spin_once(recorder, timeout_sec=0.05)
-    #         now = navigator.get_clock().now()
-    #         if now - nav_start > Duration(seconds=600.0):
-    #             navigator.cancelTask()
-    #             break
-    # -----------------------------------------------------------------------
+        # -----------------------------------------------------------------------
+        # OPTION B (alternative): visit each pose individually with goToPose.
+        # Uncomment this block and comment out OPTION A above to use it.
+        # -----------------------------------------------------------------------
+        # nav_start = navigator.get_clock().now()
+        # for idx, pose in enumerate(route_poses):
+        #     navigator.get_logger().info(f'Navigating to pose {idx + 1}/{len(route_poses)}')
+        #     navigator.goToPose(pose)
+        #     while not navigator.isTaskComplete():
+        #         rclpy.spin_once(recorder, timeout_sec=0.05)
+        #         now = navigator.get_clock().now()
+        #         if now - nav_start > Duration(seconds=600.0):
+        #             navigator.cancelTask()
+        #             break
+        # -----------------------------------------------------------------------
 
-    result = navigator.getResult()
-    if result == TaskResult.SUCCEEDED:
-        navigator.get_logger().info('All waypoints reached successfully!')
-    elif result == TaskResult.CANCELED:
-        navigator.get_logger().info('Navigation was canceled.')
-    elif result == TaskResult.FAILED:
-        navigator.get_logger().info('Navigation failed.')
+        result = navigator.getResult()
+        if result == TaskResult.SUCCEEDED:
+            navigator.get_logger().info('All waypoints reached successfully!')
+        elif result == TaskResult.CANCELED:
+            navigator.get_logger().info('Navigation was canceled.')
+        elif result == TaskResult.FAILED:
+            navigator.get_logger().info('Navigation failed.')
 
-    recorder.stop()
-    recorder.destroy_node()
-    rclpy.shutdown()
+    except KeyboardInterrupt:
+        navigator.get_logger().info('Interrupted by user, cancelling...')
+        navigator.cancelTask()
+    finally:
+        recorder.stop()
+        recorder.destroy_node()
+        navigator.destroy_node()
+        rclpy.shutdown()   
 
 
 if __name__ == '__main__':
